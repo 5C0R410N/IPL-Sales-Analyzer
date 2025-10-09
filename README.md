@@ -1,10 +1,10 @@
 # IPL Sales Analyzer
 
-A powerful sales data analyzer for IPL with Cython optimization and territory management.
+Advanced sales data analyzer for IPL with Cython optimization, territory detection, and interactive search.
 
 ## 🚀 One-Click Installation
 
-Copy and paste this magic command in Termux - just click the copy button! 📋
+**Copy this command and paste it in Termux:**
 
 ```bash
-cd && pkg update -y && pkg install -y git python && git clone https://github.com/5C0R410N/IPL-Sales-Analyzer.git && cd IPL-Sales-Analyzer && chmod +x install.sh && ./install.sh
+pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https://github.com/5C0R410N/IPL-Sales-Analyzer.git && cd IPL-Sales-Analyzer && chmod +x install.sh && python setup_directories.py && ./install.sh
