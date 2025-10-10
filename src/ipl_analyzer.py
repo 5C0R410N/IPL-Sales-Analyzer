@@ -14,17 +14,11 @@ from collections import Counter
 
 # Simple direct imports - Cython/Python fallback
 try:
-    import parser_pure_python
-    import calculator_pure_python  
-    import core_pure_python
-    print("Using Python fallback modules")
-    
-    parser = parser_pure_python
-    calculator = calculator_pure_python
-    core = core_pure_python
-    
+    # This will use the smart loader from __init__.py
+    from src import parser, calculator, core
+    print("✅ Modules loaded successfully")
 except ImportError as e:
-    print(f"Module import error: {e}")
+    print(f"❌ Module import error: {e}")
     sys.exit(1)
 
 # Configuration
@@ -323,7 +317,7 @@ def get_date_range_for_territory(text_file_path, selected_territory):
         return "Unknown Date Range"
 
 def display_product_data_list(matching_products, target_share):
-    """Display product data in list format"""
+    """Display product data in list format - FIXED CALCULATIONS"""
     if not matching_products:
         print("No products found matching the criteria.")
         return "", 0.0
@@ -334,7 +328,7 @@ def display_product_data_list(matching_products, target_share):
     # List display
     list_content = f"--- Found {len(matching_products)} product(s) matching query ---\n\n"
     report_content = list_content
-    
+
     for product in matching_products:
         entry_str = f"Product Code: {product['code']}\n"
         entry_str += f"Brand Name: {product['brand_name']}\n"
@@ -350,7 +344,7 @@ def display_product_data_list(matching_products, target_share):
     
     print(list_content)
     
-    # Totals display
+    # Totals display - WITH VERIFICATION LIKE PREVIOUS CODE
     totals_content = f"--- Total for matching products ---\n"
     totals_content += f"    - Total Target Quantity: {totals['total_tgt_qty']}\n"
     totals_content += f"    - Total Sold Quantity: {totals['total_sold_qty']}\n"
@@ -364,7 +358,7 @@ def display_product_data_list(matching_products, target_share):
     print(totals_content)
     report_content += totals_content
     
-    # National Average calculation
+    # National Average calculation - FIXED LOGIC
     national_avg_rounded = calculator.calculate_national_average_python(totals['total_accounted_val'], target_share)
     
     if national_avg_rounded > 0:
@@ -372,12 +366,13 @@ def display_product_data_list(matching_products, target_share):
         avg_content += f"    - Total Accounted Value: {totals['total_accounted_val']:.2f} Taka\n"
         avg_content += f"    - Target Share: {target_share}\n"
         avg_content += f"    - National Average (Crores): {national_avg_rounded}\n\n"
+        print(avg_content)
+        report_content += avg_content
     else:
         avg_content = f"--- National Average Calculation ---\n"
         avg_content += f"    - Calculation skipped (insufficient data)\n\n"
-    
-    print(avg_content)
-    report_content += avg_content
+        print(avg_content)
+        report_content += avg_content
     
     return report_content, national_avg_rounded
 
@@ -408,7 +403,8 @@ def display_zero_value_products_list(zero_matches):
     return report_content, 0.0
 
 def main():
-    global start_page, end_page
+    # Remove global declarations - use function parameters instead
+    start_page, end_page = 339, 345  # Default values
     
     # Initial setup
     print_header("IPL SALES ANALYZER")
