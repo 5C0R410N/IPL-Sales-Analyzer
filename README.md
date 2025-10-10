@@ -14,52 +14,48 @@ pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https:
 
 Step 1: Install Termux from F-Droid
 
-```
 📥 Download Termux from: https://f-droid.org/packages/com.termux/
+
 💡 Suggested version: 0.118.3 (1002)
+
 ⚠️ Not mandatory to download this specific version
-```
 
 Step 2: Install Termux App
 
-```
 📁 Find Termux app in Internal Storage → Download/Downloads folder
+
 🛡️ Ignore Google Security alerts during installation
+
 ✅ Continue installation process
-```
 
 Step 3: Verify Termux Authenticity
 
-```
 🔍 Termux is legitimate open-source project
+
 🌐 Verify here: https://github.com/termux
+
 ⚠️ If security concerns, this tool not for you
-```
 
 Step 4: Run Installation Command
 
-```
 1. 📱 Open Termux app (needs 10-20MB data)
 2. 📋 Paste one-click installation command
 3. ⏳ Wait for automatic installation
-```
 
 Step 5: Grant Permissions
 
-```
 ✅ Allow file access permission
+
 👆 Tap "Allow" or type "Y"
+
 ⏳ Wait for installation complete
-```
 
 Step 6: Setup File Structure
 
-```
 1. ❌ Type "exit" to close Termux
 2. 📁 Open File Manager
 3. 📂 Find "SalesSource" folder in Internal Memory
 4. 📄 Copy PDF sales file to this folder (mpo_sale_qty_value_SPECIAL_t.PDF)
-```
 
 🎯 How to Use the Analyzer
 
@@ -71,23 +67,23 @@ report
 
 First Time Setup
 
-```
 👤 Enter your name
+
 🎯 Enter Target Share (Example: 0.33)
-```
 
 Daily Setup
 
-```
 🔄 Copy new sales PDF to SalesSource folder
+
 📊 File: mpo_sale_qty_value_SPECIAL_t.PDF
+
 📁 Replace old file or keep multiple versions
-```
 
 Selecting PDF File
 
-```
 Program shows available PDF files:
+
+```
 Found 3 PDF file(s):
   1. mpo_sale_qty_value_SPECIAL_t-23.PDF
   2. mpo_sale_qty_value_SPECIAL_t(1).PDF
@@ -101,26 +97,29 @@ Setting Page Range
 
 ```
 Enter page range (e.g., 110-118) or press Enter for default (339-345):
-📖 Enter Territory Page number from report bottom
-⏎ Press Enter for default range: 339-345
-🔄 Program processes data automatically
 ```
+
+📖 Enter Territory Page number from report bottom
+
+⏎ Press Enter for default range: 339-345
+
+🔄 Program processes data automatically
 
 Searching Products
 
-```
 🔍 Type product names to find sales data
+
 ❌ Type "quit" to exit program
+
 📱 Close Termux: notification panel → "Exit"
-```
 
 🔄 Important Notes
 
-```
 🎯 Steps 1-6: FIRST TIME INSTALLATION ONLY
+
 📅 Daily: Copy new sales file → Run "report"
+
 ⚡ One-time setup required
-```
 
 🤝 Credits & Acknowledgments
 
@@ -128,10 +127,9 @@ This project is open source. You can check, use, distribute and modify as you wa
 
 Special thanks to great Artificial Intelligence Language Models:
 
-```
 🤖 Qwen: https://github.com/QwenLM/Qwen
+
 🧠 DeepSeek: https://github.com/deepseek-ai/DeepSeek-Coder
-```
 
 🙏 Personal Note
 
