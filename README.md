@@ -1,11 +1,10 @@
-```txt
-# IPL Sales Analyzer
+IPL Sales Analyzer
 
 Advanced sales data analyzer for IPL with territory detection and interactive search.
 
-## 🚀 One-Click Installation
+🚀 One-Click Installation
 
-**Copy this command and paste it in Termux:**
+Copy this command and paste it in Termux:
 
 ```bash
 pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https://github.com/5C0R410N/IPL-Sales-Analyzer.git && cd IPL-Sales-Analyzer && chmod +x install.sh && python setup_directories.py && ./install.sh
@@ -15,110 +14,113 @@ pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https:
 
 Step 1: Install Termux from F-Droid
 
-📥 Download Termux directly from: https://f-droid.org/packages/com.termux/
-
-💡 Suggested version: 0.118.3 (1002) (You will see "suggested/recommended" version beside the name)
-
+```
+📥 Download Termux from: https://f-droid.org/packages/com.termux/
+💡 Suggested version: 0.118.3 (1002)
 ⚠️ Not mandatory to download this specific version
+```
 
 Step 2: Install Termux App
 
-📁 After download, find the Termux app in your Internal Storage at "Download" or "Downloads" folder (varies by device)
-
-🛡️ During installation, you may see Google Security alerts about "outdated package" or "unknown source installation"
-
-✅ Just ignore these warnings and continue the installation process
+```
+📁 Find Termux app in Internal Storage → Download/Downloads folder
+🛡️ Ignore Google Security alerts during installation
+✅ Continue installation process
+```
 
 Step 3: Verify Termux Authenticity
 
-🔍 Termux is a legitimate open-source project
-
-🌐 You can verify it here: https://github.com/termux
-
-⚠️ If you have doubts about installing "virus or malware", this tool is not for you
+```
+🔍 Termux is legitimate open-source project
+🌐 Verify here: https://github.com/termux
+⚠️ If security concerns, this tool not for you
+```
 
 Step 4: Run Installation Command
 
-1. 📱 Open Termux app (needs 10-20MB data for first run)
-2. 📋 Copy and paste the one-click installation command above
-3. ⏳ The script will automatically install everything needed
+```
+1. 📱 Open Termux app (needs 10-20MB data)
+2. 📋 Paste one-click installation command
+3. ⏳ Wait for automatic installation
+```
 
 Step 5: Grant Permissions
 
-✅ Termux will ask for permission to manage file access
-
-👆 Tap "Allow" or sometimes type "Y" to continue
-
-⏳ Wait for installation to complete
+```
+✅ Allow file access permission
+👆 Tap "Allow" or type "Y"
+⏳ Wait for installation complete
+```
 
 Step 6: Setup File Structure
 
-1. ❌ After installation completes, type "exit" on terminal to close Termux
-2. 📁 Open your phone's File Manager
-3. 📂 You will see a new folder named "SalesSource" in your Internal Memory (Phone storage)
-4. 📄 Copy or move your PDF sales file to this folder (Example: mpo_sale_qty_value_SPECIAL_t.PDF)
+```
+1. ❌ Type "exit" to close Termux
+2. 📁 Open File Manager
+3. 📂 Find "SalesSource" folder in Internal Memory
+4. 📄 Copy PDF sales file to this folder (mpo_sale_qty_value_SPECIAL_t.PDF)
+```
 
 🎯 How to Use the Analyzer
 
 Starting the Program
 
-✨ Open Termux and type "report" (the program will start)
+```bash
+report
+```
 
-👤 For first time setup, program will ask for your name - input that
+First Time Setup
 
-🎯 Then it will ask for your Target Share (Example: 0.33) - input this for future uses
+```
+👤 Enter your name
+🎯 Enter Target Share (Example: 0.33)
+```
 
-Daily Setup: Adding New Sales Data
+Daily Setup
 
-🔄 Before running the analyzer daily, copy or move your new sales PDF file (e.g., mpo_sale_qty_value_SPECIAL_t.PDF) to the SalesSource folder
-
-📊 Replace the old file or keep multiple versions as needed
+```
+🔄 Copy new sales PDF to SalesSource folder
+📊 File: mpo_sale_qty_value_SPECIAL_t.PDF
+📁 Replace old file or keep multiple versions
+```
 
 Selecting PDF File
 
-Program will show list of PDF files in the directory:
-
 ```
+Program shows available PDF files:
 Found 3 PDF file(s):
-   1. mpo_sale_qty_value_SPECIAL_t-23.PDF
-      Modified: 10-10-25 (04:08 AM)
-   2. mpo_sale_qty_value_SPECIAL_t(1).PDF
-      Modified: 07-10-25 (05:04 PM)
-   3. mpo_sale_qty_value_SPECIAL_t.PDF
-      Modified: 07-10-25 (02:10 AM)
+  1. mpo_sale_qty_value_SPECIAL_t-23.PDF
+  2. mpo_sale_qty_value_SPECIAL_t(1).PDF
+  3. mpo_sale_qty_value_SPECIAL_t.PDF
 
 Select PDF file (1-3): 1
 ✅ Selected: mpo_sale_qty_value_SPECIAL_t-23.PDF
-📅 Modified: 10-10-25 (04:08 AM)
 ```
 
 Setting Page Range
 
 ```
-Enter page range (e.g., 110-118) or press Enter for default (339-345): 
-```
-
-📖 Enter your Territory Page number (from sales report bottom)
-
+Enter page range (e.g., 110-118) or press Enter for default (339-345):
+📖 Enter Territory Page number from report bottom
 ⏎ Press Enter for default range: 339-345
-
 🔄 Program processes data automatically
+```
 
 Searching Products
 
-🔍 Type product names correctly to find sales data
-
+```
+🔍 Type product names to find sales data
 ❌ Type "quit" to exit program
-
-📱 Close Termux: pull notification panel → Click "Exit"
+📱 Close Termux: notification panel → "Exit"
+```
 
 🔄 Important Notes
 
-🎯 Steps 1-6 are for FIRST TIME INSTALLATION only
-
-📅 Daily Routine: Copy new sales file → Run "report" command
-
+```
+🎯 Steps 1-6: FIRST TIME INSTALLATION ONLY
+📅 Daily: Copy new sales file → Run "report"
 ⚡ One-time setup required
+```
 
 🤝 Credits & Acknowledgments
 
@@ -126,9 +128,10 @@ This project is open source. You can check, use, distribute and modify as you wa
 
 Special thanks to great Artificial Intelligence Language Models:
 
+```
 🤖 Qwen: https://github.com/QwenLM/Qwen
-
 🧠 DeepSeek: https://github.com/deepseek-ai/DeepSeek-Coder
+```
 
 🙏 Personal Note
 
@@ -145,5 +148,3 @@ Love You "Priyotoma Tasnim"
 ---
 
 Repository: https://github.com/5C0R410N/IPL-Sales-Analyzer
-
-```
