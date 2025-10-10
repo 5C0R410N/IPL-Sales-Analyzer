@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-IPL Sales Analyzer - Final Optimized Version (Cython + Python Features)
+IPL Sales Analyzer - Final Optimized Version
 """
 
 import os
@@ -12,19 +12,23 @@ from pathlib import Path
 import re
 from collections import Counter
 
-# Simple direct imports - Cython/Python fallback
+# SIMPLE DIRECT IMPORTS - NO src MODULE
 try:
-    # This will use the smart loader from __init__.py
-    from src import parser, calculator, core
-    print("✅ Modules loaded successfully")
+    # Import from current directory
+    import parser_pure_python as parser
+    import calculator_pure_python as calculator
+    import core_pure_python as core
+    print("✅ Using Python modules directly")
+    
 except ImportError as e:
     print(f"❌ Module import error: {e}")
+    print("Please make sure all Python files are in the same directory")
     sys.exit(1)
 
 # Configuration
 USER_DATA_FILE = "user_data.txt"
 TARGET_SHARE_FILE = "target_share.txt"
-SCRIPT_DIR = Path(__file__).parent.parent
+SCRIPT_DIR = Path(__file__).parent  # Current directory where ipl_analyzer.py is located
 
 def get_safe_width():
     """Gets terminal width or defaults to 80 if unavailable."""
@@ -317,7 +321,7 @@ def get_date_range_for_territory(text_file_path, selected_territory):
         return "Unknown Date Range"
 
 def display_product_data_list(matching_products, target_share):
-    """Display product data in list format - FIXED CALCULATIONS"""
+    """Display product data in list format"""
     if not matching_products:
         print("No products found matching the criteria.")
         return "", 0.0
@@ -344,7 +348,7 @@ def display_product_data_list(matching_products, target_share):
     
     print(list_content)
     
-    # Totals display - WITH VERIFICATION LIKE PREVIOUS CODE
+    # Totals display
     totals_content = f"--- Total for matching products ---\n"
     totals_content += f"    - Total Target Quantity: {totals['total_tgt_qty']}\n"
     totals_content += f"    - Total Sold Quantity: {totals['total_sold_qty']}\n"
@@ -358,7 +362,7 @@ def display_product_data_list(matching_products, target_share):
     print(totals_content)
     report_content += totals_content
     
-    # National Average calculation - FIXED LOGIC
+    # National Average calculation
     national_avg_rounded = calculator.calculate_national_average_python(totals['total_accounted_val'], target_share)
     
     if national_avg_rounded > 0:
@@ -366,13 +370,12 @@ def display_product_data_list(matching_products, target_share):
         avg_content += f"    - Total Accounted Value: {totals['total_accounted_val']:.2f} Taka\n"
         avg_content += f"    - Target Share: {target_share}\n"
         avg_content += f"    - National Average (Crores): {national_avg_rounded}\n\n"
-        print(avg_content)
-        report_content += avg_content
     else:
         avg_content = f"--- National Average Calculation ---\n"
         avg_content += f"    - Calculation skipped (insufficient data)\n\n"
-        print(avg_content)
-        report_content += avg_content
+    
+    print(avg_content)
+    report_content += avg_content
     
     return report_content, national_avg_rounded
 
@@ -470,7 +473,7 @@ def main():
     print(f"\n📍 Territory: {selected_territory}")
     print(f"📅 Date Range: {doc_date_range}")
     
-    # Parse data using Cython-optimized parser
+    # Parse data using Python parser
     print("📊 Parsing sales data...")
     
     try:
@@ -515,7 +518,7 @@ def main():
             print("❌ Please enter a product name.")
             continue
         
-        # Fast search using Cython-optimized calculator
+        # Fast search using Python calculator
         matching_products, zero_matches = calculator.search_products_python(structured_data + zero_value_data, product_query)
         
         if matching_products:
