@@ -10,8 +10,9 @@ IPL Sales Analyzer - Cython Optimized Calculator
 High-performance calculations for sales data analysis
 """
 
-import numpy as np
-cimport numpy as cnp
+# REMOVE THESE LINES - no numpy needed
+# import numpy as np
+# cimport numpy as cnp
 
 def calculate_totals_cython(product_data):
     """

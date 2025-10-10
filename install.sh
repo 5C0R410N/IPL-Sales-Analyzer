@@ -16,19 +16,28 @@ if [ -d "/data/data/com.termux/files/usr" ]; then
     pkg update -y
     pkg upgrade -y
     
-    # Install required packages
+    # Install required packages - ONLY what you actually use
     echo "Installing required packages..."
-    pkg install -y python python-pip git build-essential clang
+    pkg install -y python python-pip git
     
-    # Install PDF tools
-    echo "Installing PDF processing tools..."
-    pkg install -y poppler poppler-utils
+    # Check if pdftotext and pdftk are available
+    if ! command -v pdftotext &> /dev/null; then
+        echo "❌ pdftotext not found. Please install it manually:"
+        echo "   pkg install poppler"
+        exit 1
+    fi
     
+    if ! command -v pdftk &> /dev/null; then
+        echo "❌ pdftk not found. Please install it manually:" 
+        echo "   pkg install pdftk"
+        exit 1
+    fi
+
 else
     echo "Standard Linux environment detected"
     # Install system dependencies for Linux
     sudo apt update
-    sudo apt install -y python3 python3-pip python3-venv build-essential poppler-utils
+    sudo apt install -y python3 python3-pip python3-venv pdftk poppler-utils
 fi
 
 # Create necessary directories
