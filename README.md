@@ -1,11 +1,10 @@
-```txt
-# IPL Sales Analyzer
+IPL Sales Analyzer
 
 Advanced sales data analyzer for IPL with territory detection and interactive search.
 
-## 🚀 One-Click Installation
+🚀 One-Click Installation
 
-**Copy this command and paste it in Termux:**
+Copy this command and paste it in Termux:
 
 ```bash
 pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https://github.com/5C0R410N/IPL-Sales-Analyzer.git && cd IPL-Sales-Analyzer && chmod +x install.sh && python setup_directories.py && ./install.sh
@@ -16,20 +15,20 @@ pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https:
 Step 1: Install Termux from F-Droid
 
 · Download Termux directly from: https://f-droid.org/packages/com.termux/
-· Suggested version: 0.118.3 (1002) (You will see "suggested/recommended" version beside the name)
-· Not mandatory to download this specific version
+·Suggested version: 0.118.3 (1002) (You will see "suggested/recommended" version beside the name)
+·Not mandatory to download this specific version
 
 Step 2: Install Termux App
 
 · After download, find the Termux app in your Internal Storage at "Download" or "Downloads" folder (varies by device)
-· During installation, you may see Google Security alerts about "outdated package" or "unknown source installation"
-· Just ignore these warnings and continue the installation process
+·During installation, you may see Google Security alerts about "outdated package" or "unknown source installation"
+·Just ignore these warnings and continue the installation process
 
 Step 3: Verify Termux Authenticity
 
 · Termux is a legitimate open-source project
-· You can verify it here: https://github.com/termux
-· If you have doubts about installing "virus or malware", this tool is not for you
+·You can verify it here: https://github.com/termux
+·If you have doubts about installing "virus or malware", this tool is not for you
 
 Step 4: Run Installation Command
 
@@ -40,8 +39,8 @@ Step 4: Run Installation Command
 Step 5: Grant Permissions
 
 · Termux will ask for permission to manage file access
-· Tap "Allow" or sometimes type "Y" to continue
-· Wait for installation to complete
+·Tap "Allow" or sometimes type "Y" to continue
+·Wait for installation to complete
 
 Step 6: Setup File Structure
 
@@ -54,9 +53,14 @@ Step 6: Setup File Structure
 
 Starting the Program
 
-· Open Termux and type "report" (the program will start)
-· For first time setup, program will ask for your name - input that
-· Then it will ask for your Target Share (Example: 0.33) - input this for future uses
+· Open Termux and type report (the program will start)
+·For first time setup, program will ask for your name - input that
+·Then it will ask for your Target Share (Example: 0.33) - input this for future uses
+
+Daily Setup: Adding New Sales Data
+
+· Before running the analyzer daily, copy or move your new sales PDF file (e.g., mpo_sale_qty_value_SPECIAL_t.PDF) to the SalesSource folder
+·Replace the old file or keep multiple versions as needed
 
 Selecting PDF File
 
@@ -85,19 +89,19 @@ Enter page range (e.g., 110-118) or press Enter for default (339-345):
 (Enter your Territory Page number, found at the bottom of Sales Report)
 
 · Press Enter to use default range: 339-345
-· Program will process the data automatically
+·Program will process the data automatically
 
 Searching Products
 
 · Type product names correctly to find sales data
-· To quit or close the program, simply type "quit" at the search prompt
-· To close Termux completely: pull down notification panel and click "Exit"
+·To quit or close the program, simply type "quit" at the search prompt
+·To close Termux completely: pull down notification panel and click "Exit"
 
 🔄 Important Notes
 
 · Steps 1-6 are for FIRST TIME INSTALLATION only
-· After setup, you only need to use "report" command daily
-· This is one-time setup work
+·After setup, daily you need to: copy new sales file (mpo_sale_qty_value_SPECIAL_t.PDF) to SalesSource folder, then use report command
+·This is one-time setup work
 
 🤝 Credits & Acknowledgments
 
@@ -106,7 +110,7 @@ This project is open source. You can check, use, distribute and modify as you wa
 Special thanks to great Artificial Intelligence Language Models:
 
 · Qwen: https://github.com/QwenLM/Qwen
-· DeepSeek: https://github.com/deepseek-ai/DeepSeek-Coder
+·DeepSeek: https://github.com/deepseek-ai/DeepSeek-Coder
 
 🙏 Personal Note
 
@@ -123,5 +127,3 @@ Love You "Priyotoma Tasnim"
 ---
 
 Repository: https://github.com/5C0R410N/IPL-Sales-Analyzer
-
-```
