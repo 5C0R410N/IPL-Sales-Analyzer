@@ -10,28 +10,15 @@ if [ -d "/data/data/com.termux/files/usr" ]; then
     # Request storage permission
     echo "Requesting storage permissions..."
     termux-setup-storage
+    sleep 2
     
     # Update packages
     echo "Updating Termux packages..."
-    pkg update -y
-    pkg upgrade -y
+    pkg update -y && pkg upgrade -y
     
-    # Install required packages - ONLY what you actually use
+    # Install required packages - ALL IN ONE COMMAND
     echo "Installing required packages..."
-    pkg install -y python python-pip git
-    
-    # Check if pdftotext and pdftk are available
-    if ! command -v pdftotext &> /dev/null; then
-        echo "❌ pdftotext not found. Please install it manually:"
-        echo "   pkg install poppler"
-        exit 1
-    fi
-    
-    if ! command -v pdftk &> /dev/null; then
-        echo "❌ pdftk not found. Please install it manually:" 
-        echo "   pkg install pdftk"
-        exit 1
-    fi
+    pkg install -y python python-pip git poppler pdftk
 
 else
     echo "Standard Linux environment detected"
@@ -40,10 +27,15 @@ else
     sudo apt install -y python3 python3-pip python3-venv pdftk poppler-utils
 fi
 
-# Create necessary directories
-echo "Creating directories..."
-mkdir -p /storage/emulated/0/SalesSource
-mkdir -p /storage/emulated/0/Analytics_Reports
+# Verify critical commands
+echo "Verifying installation..."
+for cmd in python pip pdftotext pdftk; do
+    if command -v $cmd &> /dev/null; then
+        echo "✅ $cmd is available"
+    else
+        echo "❌ $cmd is NOT available"
+    fi
+done
 
 # Install Python dependencies
 echo "Installing Python dependencies..."

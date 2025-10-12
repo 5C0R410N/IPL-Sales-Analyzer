@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-IPL Sales Analyzer - Final Optimized Version
+IPL Sales Analyzer - Final Optimized Version with Auto-Import
 """
 
 import os
 import sys
 import subprocess
 import shutil
+import hashlib
 from datetime import datetime
 from pathlib import Path
 import re
@@ -28,8 +29,194 @@ except ImportError as e:
 # Configuration
 USER_DATA_FILE = "user_data.txt"
 TARGET_SHARE_FILE = "target_share.txt"
+HASH_REGISTRY_FILE = "pdf_hash_registry.txt"
 SCRIPT_DIR = Path(__file__).parent  # Current directory where ipl_analyzer.py is located
 
+# Auto-Import Functions
+def calculate_single_file_hash(file_path):
+    """Calculate MD5 hash of a file"""
+    hash_md5 = hashlib.md5()
+    try:
+        with open(file_path, "rb") as f:
+            for chunk in iter(lambda: f.read(4096), b""):
+                hash_md5.update(chunk)
+        return hash_md5.hexdigest()
+    except Exception as e:
+        print(f"❌ Error calculating hash for {file_path}: {e}")
+        return None
+
+def load_hash_registry():
+    """Load existing PDF hashes from registry file"""
+    registry = set()
+    registry_file = SCRIPT_DIR / HASH_REGISTRY_FILE
+    
+    if registry_file.exists():
+        try:
+            with open(registry_file, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if line and '|' in line:
+                        parts = line.split('|')
+                        if len(parts) >= 2:
+                            registry.add(parts[0])  # Just store the hash
+            print(f"📊 Loaded {len(registry)} known PDF hashes from registry")
+        except Exception as e:
+            print(f"❌ Error loading hash registry: {e}")
+    
+    return registry
+
+def save_to_hash_registry(file_hash, filename, file_size, source_folder):
+    """Save new PDF hash to registry file"""
+    try:
+        registry_file = SCRIPT_DIR / HASH_REGISTRY_FILE
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        registry_entry = f"{file_hash}|{filename}|{file_size:.2f}MB|{source_folder}|{timestamp}\n"
+        
+        with open(registry_file, 'a', encoding='utf-8') as f:
+            f.write(registry_entry)
+        
+        print(f"💾 Added to hash registry: {filename} ({file_hash[:16]}...)")
+    except Exception as e:
+        print(f"❌ Error saving to hash registry: {e}")
+
+def find_latest_pdf_in_downloads(known_hashes):
+    """
+    RECURSIVELY search Download folders for latest PDF file in 5-6MB range
+    Returns path to best matching PDF or None
+    """
+    download_folders = [
+        "/storage/emulated/0/Download",
+        "/storage/emulated/0/Downloads", 
+        "/storage/emulated/0/download",
+        "/storage/emulated/0/downloads"
+    ]
+    
+    candidate_pdfs = []
+    
+    for folder in download_folders:
+        if not os.path.exists(folder):
+            continue
+            
+        try:
+            # RECURSIVE walk through all subdirectories
+            for root, dirs, files in os.walk(folder):
+                for file in files:
+                    if file.lower().endswith(('.pdf', '.PDF')):
+                        file_path = os.path.join(root, file)
+                        
+                        # Skip if it's a directory
+                        if not os.path.isfile(file_path):
+                            continue
+                        
+                        file_size = os.path.getsize(file_path) / (1024 * 1024)  # Size in MB
+                        
+                        # Check if file size is in 5-6MB range
+                        if 5.0 <= file_size <= 6.0:
+                            creation_time = os.path.getctime(file_path)
+                            
+                            candidate_pdfs.append({
+                                'path': file_path,
+                                'name': file,
+                                'size_mb': file_size,
+                                'creation_time': creation_time,
+                                'source_folder': root,
+                                'relative_path': os.path.relpath(file_path, folder) if root != folder else file
+                            })
+        except Exception as e:
+            print(f"❌ Error scanning {folder}: {e}")
+            continue
+    
+    if not candidate_pdfs:
+        return None
+    
+    # Sort by creation time (newest first)
+    candidate_pdfs.sort(key=lambda x: x['creation_time'], reverse=True)
+    
+    # Check only the LATEST PDF file
+    latest_pdf = candidate_pdfs[0]
+    
+    # Calculate hash ONLY for the latest file
+    file_hash = calculate_single_file_hash(latest_pdf['path'])
+    if not file_hash:
+        return None
+    
+    # Check if this hash is already known
+    if file_hash in known_hashes:
+        print(f"⏭️  Skipping known file: {latest_pdf['name']} (from {latest_pdf['relative_path']})")
+        return None
+    
+    # This is a NEW file - add hash to the object
+    latest_pdf['hash'] = file_hash
+    return latest_pdf
+
+def auto_import_pdf_from_downloads():
+    """
+    Automatically find and move latest NEW PDF from Downloads to SalesSource
+    Uses hash registry to avoid reprocessing known files
+    """
+    print("🔍 Scanning Download folders for NEW PDF files (5-6MB)...")
+    
+    # Load known hashes from registry (FAST - no file scanning)
+    known_hashes = load_hash_registry()
+    
+    # Find latest PDF (recursive search)
+    latest_pdf = find_latest_pdf_in_downloads(known_hashes)
+    
+    if not latest_pdf:
+        print("✅ No new PDFs found (or all files already processed)")
+        return None
+    
+    print(f"🎯 Found NEW PDF: {latest_pdf['name']}")
+    print(f"   Size: {latest_pdf['size_mb']:.2f} MB")
+    print(f"   Location: {latest_pdf['source_folder']}")
+    if latest_pdf['relative_path'] != latest_pdf['name']:
+        print(f"   Path: {latest_pdf['relative_path']}")
+    print(f"   Hash: {latest_pdf['hash'][:16]}...")
+    
+    # Destination path in SalesSource
+    sales_source_dir = "/storage/emulated/0/SalesSource"
+    destination_path = os.path.join(sales_source_dir, latest_pdf['name'])
+    
+    # MOVE file to SalesSource
+    try:
+        import shutil
+        shutil.move(latest_pdf['path'], destination_path)
+        print(f"✅ Successfully MOVED to SalesSource: {latest_pdf['name']}")
+        
+        # Save to hash registry so we don't process this file again
+        save_to_hash_registry(
+            latest_pdf['hash'], 
+            latest_pdf['name'], 
+            latest_pdf['size_mb'], 
+            latest_pdf['source_folder']
+        )
+        
+        return destination_path
+        
+    except Exception as e:
+        print(f"❌ Error moving PDF: {e}")
+        
+        # Fallback to copy if move fails
+        try:
+            print("🔄 Attempting to copy instead of move...")
+            shutil.copy2(latest_pdf['path'], destination_path)
+            print(f"✅ Successfully COPIED to SalesSource: {latest_pdf['name']}")
+            
+            # Still save to registry even if copied
+            save_to_hash_registry(
+                latest_pdf['hash'], 
+                latest_pdf['name'], 
+                latest_pdf['size_mb'], 
+                latest_pdf['source_folder']
+            )
+            
+            return destination_path
+            
+        except Exception as copy_error:
+            print(f"❌ Error copying PDF: {copy_error}")
+            return None
+
+# Original Functions (Unchanged)
 def get_safe_width():
     """Gets terminal width or defaults to 80 if unavailable."""
     try:
@@ -425,7 +612,16 @@ def main():
         print("❌ Directory setup failed.")
         sys.exit(1)
     
-    # Select PDF file
+    # AUTO-IMPORT: Try to find and move latest PDF from Downloads
+    print_header("AUTO PDF IMPORT")
+    imported_pdf = auto_import_pdf_from_downloads()
+    
+    if imported_pdf:
+        print(f"🎉 Successfully imported: {os.path.basename(imported_pdf)}")
+    else:
+        print("ℹ️  No new PDFs found in Download folders")
+    
+    # Select PDF file (from SalesSource, which may now have the imported file)
     pdf_path = select_pdf_file()
     
     # Get page range
