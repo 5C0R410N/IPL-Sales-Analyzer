@@ -14,7 +14,7 @@ pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https:
 
 ✨ Auto PDF Import Feature
 
-· 🔍 Smart Scanning: Automatically finds PDF files in Download folders
+· 🔍 Smart Scanning: Automatically finds PDF files in Download folders.
 · 📁 Recursive Search: Searches through all subdirectories (WhatsApp, Telegram, etc.)
 · ⚡ Duplicate Prevention: MD5 hash-based system prevents processing same files multiple times
 · 📊 Size Filtering: Only imports PDFs in 5-6MB range (typical sales report size)
