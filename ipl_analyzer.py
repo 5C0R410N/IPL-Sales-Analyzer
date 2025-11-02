@@ -62,37 +62,10 @@ def print_centered(text, color=Colors.WHITE):
     except:
         print(f"{color}{text}{Colors.RESET}")
 
-def show_progress(description, duration=8, color=Colors.CYAN):
+def show_progress(description, duration=3, color=Colors.CYAN):
     """Show progress bar that clears after completion"""
-    frames = [
-        '▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▯',
-        '▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮▮'
-    ]
+    frames = ['█░░░░░░░░░', '██░░░░░░░░', '███░░░░░░░', '████░░░░░░', '█████░░░░░', 
+              '██████░░░░', '███████░░░', '████████░░', '█████████░', '██████████']
     
     start_time = time.time()
     frame_count = len(frames)
@@ -109,6 +82,7 @@ def show_progress(description, duration=8, color=Colors.CYAN):
     
     clear_line()
     print(f"{Colors.GREEN}✅ {description} completed{Colors.RESET}")
+
 # Hash and File Functions
 def calculate_single_file_hash(file_path):
     """Calculate MD5 hash of a file"""
@@ -647,7 +621,7 @@ def main():
         sys.exit(1)
     
     # AUTO-IMPORT
-    print_header("AUTOMATIC PDF IMPORT SYSTEM")
+    print_header("AUTO PDF IMPORT")
     imported_pdf = auto_import_pdf_from_downloads()
     
     # FILE SELECTION
@@ -684,9 +658,9 @@ def main():
     run_command_with_progress(pdftk_cmd, "Extracting pages")
     
     # PROCESS WITH TABULA USING CUT PDF
-    print_header("PROCESSING PDF x MASUD ")
+    print_header("PROCESSING PDF WITH TABULA")
     
-    print(f"{Colors.CYAN}🔍 Analyzing PDF with hybrid method...{Colors.RESET}")
+    print(f"{Colors.CYAN}🔍 Analyzing PDF with Tabula parser...{Colors.RESET}")
     show_progress("Extracting header information", 2)
     
     try:
@@ -813,8 +787,7 @@ def main():
     
     print_header("ANALYSIS COMPLETED")
     print_centered(f"{Colors.WHITE}Thanks for using IPL Sales Analyzer!{Colors.RESET}", Colors.WHITE)
-    print_centered(f"{Colors.RED}Powered By Team : Operon - Xenovision | XO:24  {Colors.RESET}", Colors.RED)
-    print_centered(f"{Colors.RED} © Ahia Masud Emon | Halishahar | Chattagram  {Colors.RESET}", Colors.RED)
+    print_centered(f"{Colors.RED}Powered By Team : Operon - Xenovision{Colors.RESET}", Colors.RED)
     print_centered(f"{Colors.GREEN}🕒 {format_current_time()}{Colors.RESET}", Colors.GREEN)
 
 if __name__ == "__main__":
