@@ -7,7 +7,7 @@ Advanced sales data analyzer for IPL with automatic PDF import, territory detect
 Copy this command and paste it in Termux:
 
 ```bash
-pkg update -y && pkg upgrade -y && pkg install -y git python && git clone https://github.com/5C0R410N/IPL-Sales-Analyzer.git && cd IPL-Sales-Analyzer && chmod +x install.sh && python setup_directories.py && ./install.sh
+pkg update -y && pkg upgrade -y && pkg install -y git python openjdk-17 openjdk-17-jre openjdk-17-jdk && git clone https://github.com/5C0R410N/IPL-Sales-Analyzer.git && cd IPL-Sales-Analyzer && chmod +x install.sh && python setup_directories.py && ./install.sh
 ```
 
 🆕 What's New in Latest Version
