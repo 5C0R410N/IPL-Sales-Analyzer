@@ -47,10 +47,36 @@ else
     exit 1
 fi
 
-# Install Python dependencies
+# Install Python dependencies - OPTIMIZED FOR SPEED
 echo "🐍 Installing Python dependencies..."
 pip install --upgrade pip
-pip install -r requirements.txt
+
+# Get Python version dynamically for optimized installation
+PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+echo "🐍 Detected Python version: $PYTHON_VERSION"
+
+# Install with optimized flags for Termux to prevent source compilation
+if [ -d "/data/data/com.termux/files/usr" ]; then
+    echo "🚀 Using optimized installation for Termux..."
+    
+    # Install build dependencies for faster compilation
+    pkg install -y python build-essential libopenblas
+    
+    # Install numpy and pandas first with optimization flags
+    echo "📦 Installing numpy with optimization..."
+    MATHLIB=m LDFLAGS="-lpython$PYTHON_VERSION" pip install --no-build-isolation --no-cache-dir numpy>=1.21.0
+    
+    echo "📦 Installing pandas with optimization..."
+    LDFLAGS="-lpython$PYTHON_VERSION" pip install --no-build-isolation --no-cache-dir pandas>=1.5.0
+    
+    # Install remaining requirements normally
+    echo "📦 Installing other dependencies..."
+    pip install -r requirements.txt
+    
+else
+    # Standard installation for Linux
+    pip install -r requirements.txt
+fi
 
 # Test Tabula installation - NEW VERIFICATION
 echo "🧪 Testing Tabula installation..."
