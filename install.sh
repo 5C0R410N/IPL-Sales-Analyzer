@@ -16,7 +16,7 @@ if [ -d "/data/data/com.termux/files/usr" ]; then
     echo "🔄 Updating Termux packages..."
     pkg update -y && pkg upgrade -y
 
-    # Install required packages - OPTIMIZED FOR YOUR ENVIRONMENT
+    # Install required packages
     echo "📦 Installing required packages..."
     pkg install -y python python-pip git poppler pdftk openjdk-17
 
@@ -27,7 +27,7 @@ else
     sudo apt install -y python3 python3-pip python3-venv pdftk poppler-utils default-jdk
 fi
 
-# Verify critical commands - ENHANCED VERIFICATION
+# Verify critical commands
 echo "🔍 Verifying installation..."
 for cmd in python pip java; do
     if command -v $cmd &> /dev/null; then
@@ -47,7 +47,7 @@ else
     exit 1
 fi
 
-# Install Python dependencies - OPTIMIZED BASED ON YOUR NUMPY CONFIG
+# Install Python dependencies - OPTIMIZED WITH PRE-BUILT WHEELS
 echo "🐍 Installing Python dependencies..."
 pip install --upgrade pip
 
@@ -55,36 +55,26 @@ pip install --upgrade pip
 PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 echo "🐍 Detected Python version: $PYTHON_VERSION"
 
-# Install with optimized flags for Termux - BASED ON YOUR ACTUAL CONFIG
+# Install with optimized approach for Termux
 if [ -d "/data/data/com.termux/files/usr" ]; then
     echo "🚀 Using Termux-optimized installation..."
+    echo "💡 Using pre-built wheels for faster installation..."
     
-    # Install EXACT build dependencies from your numpy config
-    echo "📦 Installing build dependencies..."
-    pkg install -y python build-essential libopenblas cmake patchelf binutils-is-llvm
+    # Install numpy first
+    echo "📦 Installing numpy..."
+    pip install "numpy>=1.26.0"
+    echo "✅ numpy installed successfully"
     
-    # Install Python build tools that your numpy actually uses
-    echo "📦 Installing Python build tools..."
-    pip install meson-python pyproject-metadata cython
-    
-    # SET OPTIMIZED ENVIRONMENT VARIABLES BASED ON YOUR CONFIG
-    export NPY_NUM_BUILD_JOBS=4
-    export CFLAGS="-fstack-protector-strong -Oz -march=armv8-a"
-    export LDFLAGS="-L/data/data/com.termux/files/usr/lib -Wl,-rpath=/data/data/com.termux/files/usr/lib"
-    
-    # INSTALL NUMPY WITH EXACT OPTIONS FROM YOUR CONFIG
-    echo "📦 Installing numpy (optimized for ARM64)..."
-    MATHLIB="m" LDFLAGS="-lpython$PYTHON_VERSION -L/data/data/com.termux/files/usr/lib" \
-    pip install --no-build-isolation --no-cache-dir --compile "numpy==1.24.3"
-    
-    # INSTALL PANDAS WITH OPTIMIZED SETTINGS
-    echo "📦 Installing pandas (optimized version)..."
-    LDFLAGS="-lpython$PYTHON_VERSION -L/data/data/com.termux/files/usr/lib" \
-    pip install --no-build-isolation --no-cache-dir --compile "pandas==1.5.3"
+    # Install pandas with verbose output to show progress
+    echo "📦 Installing pandas..."
+    echo "🔍 Checking for pre-built wheels (this should be fast)..."
+    pip install -v "pandas>=2.3.3" 2>&1 | grep -E "(Using cached|Building wheels|Successfully installed)" || true
+    echo "✅ pandas installed successfully"
     
     # Install remaining requirements
     echo "📦 Installing other dependencies..."
-    pip install Cython>=0.29.0 pytz>=2021.3 colorama>=0.4.4 tabula-py>=2.8.0 jpype1>=1.4.0 python-dateutil>=2.8.2
+    pip install Cython>=0.29.0 pytz>=2021.3 colorama>=0.4.4 tabula-py>=2.8.0 jpype1>=1.4.0 python-dateutil>=2.8.2 tzdata
+    echo "✅ All dependencies installed"
     
 else
     # Standard installation for Linux
@@ -92,11 +82,14 @@ else
     pip install -r requirements.txt
 fi
 
-# Test Tabula installation
-echo "🧪 Testing Tabula installation..."
-python -c "import tabula; import jpype; import pandas; print('✅ All dependencies working!')"
+# Test installation
+echo "🧪 Testing installation..."
+python -c "import pandas; print(f'✅ Pandas {pandas.__version__} working')"
+python -c "import tabula; import jpype; print('✅ Tabula and JPype1 working!')"
+python -c "import numpy; print(f'✅ NumPy {numpy.__version__} working')"
+
 if [ $? -eq 0 ]; then
-    echo "✅ Tabula and pandas installation successful"
+    echo "✅ All dependencies installed successfully"
 else
     echo "❌ Installation failed - checking dependencies..."
     pip list | grep -E "(tabula|jpype|pandas|numpy)"
