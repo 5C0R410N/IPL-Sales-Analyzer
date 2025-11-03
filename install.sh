@@ -47,31 +47,29 @@ else
     exit 1
 fi
 
-# Install Python dependencies - OPTIMIZED FOR SPEED
+# Install Python dependencies - FIXED VERSION
 echo "🐍 Installing Python dependencies..."
 pip install --upgrade pip
 
-# Get Python version dynamically for optimized installation
+# Get Python version dynamically
 PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 echo "🐍 Detected Python version: $PYTHON_VERSION"
 
-# Install with optimized flags for Termux to prevent source compilation
+# Install with optimized flags for Termux
 if [ -d "/data/data/com.termux/files/usr" ]; then
     echo "🚀 Using optimized installation for Termux..."
     
     # Install build dependencies for faster compilation
-    pkg install -y python build-essential libopenblas
+    echo "📦 Installing build dependencies..."
+    pkg install -y python build-essential libopenblas cmake patchelf
     
-    # Install numpy and pandas first with optimization flags
-    echo "📦 Installing numpy with optimization..."
-    MATHLIB=m LDFLAGS="-lpython$PYTHON_VERSION" pip install --no-build-isolation --no-cache-dir numpy>=1.21.0
+    # Install Python build dependencies
+    echo "📦 Installing Python build tools..."
+    pip install meson-python pyproject-metadata
     
-    echo "📦 Installing pandas with optimization..."
-    LDFLAGS="-lpython$PYTHON_VERSION" pip install --no-build-isolation --no-cache-dir pandas>=1.5.0
-    
-    # Install remaining requirements normally
-    echo "📦 Installing other dependencies..."
-    pip install -r requirements.txt
+    # Install all requirements with optimization
+    echo "📦 Installing Python packages..."
+    LDFLAGS="-lpython$PYTHON_VERSION" pip install --no-build-isolation --no-cache-dir -r requirements.txt
     
 else
     # Standard installation for Linux
