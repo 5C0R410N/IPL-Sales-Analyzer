@@ -47,7 +47,7 @@ else
     exit 1
 fi
 
-# Install Python dependencies - OPTIMIZED WITH PRE-BUILT WHEELS
+# Install Python dependencies - WITH WHEEL SUPPORT
 echo "🐍 Installing Python dependencies..."
 pip install --upgrade pip
 
@@ -58,18 +58,23 @@ echo "🐍 Detected Python version: $PYTHON_VERSION"
 # Install with optimized approach for Termux
 if [ -d "/data/data/com.termux/files/usr" ]; then
     echo "🚀 Using Termux-optimized installation..."
-    echo "💡 Using pre-built wheels for faster installation..."
     
     # Install numpy first
     echo "📦 Installing numpy..."
     pip install "numpy>=1.26.0"
     echo "✅ numpy installed successfully"
     
-    # Install pandas with verbose output to show progress
+    # Install pandas from local wheel if available
     echo "📦 Installing pandas..."
-    echo "🔍 Checking for pre-built wheels (this should be fast)..."
-    pip install -v "pandas>=2.3.3" 2>&1 | grep -E "(Using cached|Building wheels|Successfully installed)" || true
-    echo "✅ pandas installed successfully"
+    if [ -f "wheels/pandas-2.3.3-cp312-cp312-linux_aarch64.whl" ]; then
+        echo "🚀 Using local pre-built wheel (instant installation)..."
+        pip install wheels/pandas-2.3.3-cp312-cp312-linux_aarch64.whl
+        echo "✅ pandas installed from local wheel"
+    else
+        echo "🔍 Downloading pre-built wheel..."
+        pip install -v "pandas>=2.3.3" 2>&1 | grep -E "(Using cached|Building wheels|Successfully installed)" || true
+        echo "✅ pandas installed successfully"
+    fi
     
     # Install remaining requirements
     echo "📦 Installing other dependencies..."
