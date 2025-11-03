@@ -16,7 +16,7 @@ if [ -d "/data/data/com.termux/files/usr" ]; then
     echo "🔄 Updating Termux packages..."
     pkg update -y && pkg upgrade -y
 
-    # Install required packages - FIXED JAVA PACKAGES
+    # Install required packages - OPTIMIZED FOR YOUR ENVIRONMENT
     echo "📦 Installing required packages..."
     pkg install -y python python-pip git poppler pdftk openjdk-17
 
@@ -47,7 +47,7 @@ else
     exit 1
 fi
 
-# Install Python dependencies - FIXED VERSION
+# Install Python dependencies - OPTIMIZED BASED ON YOUR NUMPY CONFIG
 echo "🐍 Installing Python dependencies..."
 pip install --upgrade pip
 
@@ -55,35 +55,51 @@ pip install --upgrade pip
 PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 echo "🐍 Detected Python version: $PYTHON_VERSION"
 
-# Install with optimized flags for Termux
+# Install with optimized flags for Termux - BASED ON YOUR ACTUAL CONFIG
 if [ -d "/data/data/com.termux/files/usr" ]; then
-    echo "🚀 Using optimized installation for Termux..."
+    echo "🚀 Using Termux-optimized installation..."
     
-    # Install build dependencies for faster compilation
+    # Install EXACT build dependencies from your numpy config
     echo "📦 Installing build dependencies..."
-    pkg install -y python build-essential libopenblas cmake patchelf
+    pkg install -y python build-essential libopenblas cmake patchelf binutils-is-llvm
     
-    # Install Python build dependencies
+    # Install Python build tools that your numpy actually uses
     echo "📦 Installing Python build tools..."
-    pip install meson-python pyproject-metadata
+    pip install meson-python pyproject-metadata cython
     
-    # Install all requirements with optimization
-    echo "📦 Installing Python packages..."
-    LDFLAGS="-lpython$PYTHON_VERSION" pip install --no-build-isolation --no-cache-dir -r requirements.txt
+    # SET OPTIMIZED ENVIRONMENT VARIABLES BASED ON YOUR CONFIG
+    export NPY_NUM_BUILD_JOBS=4
+    export CFLAGS="-fstack-protector-strong -Oz -march=armv8-a"
+    export LDFLAGS="-L/data/data/com.termux/files/usr/lib -Wl,-rpath=/data/data/com.termux/files/usr/lib"
+    
+    # INSTALL NUMPY WITH EXACT OPTIONS FROM YOUR CONFIG
+    echo "📦 Installing numpy (optimized for ARM64)..."
+    MATHLIB="m" LDFLAGS="-lpython$PYTHON_VERSION -L/data/data/com.termux/files/usr/lib" \
+    pip install --no-build-isolation --no-cache-dir --compile "numpy==1.24.3"
+    
+    # INSTALL PANDAS WITH OPTIMIZED SETTINGS
+    echo "📦 Installing pandas (optimized version)..."
+    LDFLAGS="-lpython$PYTHON_VERSION -L/data/data/com.termux/files/usr/lib" \
+    pip install --no-build-isolation --no-cache-dir --compile "pandas==1.5.3"
+    
+    # Install remaining requirements
+    echo "📦 Installing other dependencies..."
+    pip install Cython>=0.29.0 pytz>=2021.3 colorama>=0.4.4 tabula-py>=2.8.0 jpype1>=1.4.0 python-dateutil>=2.8.2
     
 else
     # Standard installation for Linux
+    echo "📦 Installing latest package versions..."
     pip install -r requirements.txt
 fi
 
-# Test Tabula installation - NEW VERIFICATION
+# Test Tabula installation
 echo "🧪 Testing Tabula installation..."
-python -c "import tabula; import jpype; print('✅ Tabula and JPype1 working!')"
+python -c "import tabula; import jpype; import pandas; print('✅ All dependencies working!')"
 if [ $? -eq 0 ]; then
-    echo "✅ Tabula installation successful"
+    echo "✅ Tabula and pandas installation successful"
 else
-    echo "❌ Tabula installation failed - checking dependencies..."
-    pip list | grep -E "(tabula|jpype|pandas)"
+    echo "❌ Installation failed - checking dependencies..."
+    pip list | grep -E "(tabula|jpype|pandas|numpy)"
     exit 1
 fi
 
