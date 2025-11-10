@@ -17,13 +17,25 @@ def calculate_totals_python(product_data):
     total_accounted_val = 0.0
     
     for product in product_data:
+        # ALWAYS include target values from ALL products
         total_tgt_qty += product['tgt_qty']
-        total_sold_qty += product['sold_qty']
-        total_int_qty += product['int_qty']
         total_tgt_val += product['tgt_val']
-        total_sold_val += product['sold_val']
-        total_int_val += product['int_val']
-        total_accounted_val += product['total_val']
+        
+        # Only include sold/int values from products WITH activity
+        has_activity = (
+            product['sold_qty'] > 0 or
+            product['int_qty'] > 0 or
+            product['sold_val'] > 0 or
+            product['int_val'] > 0 or
+            product['total_val'] > 0
+        )
+        
+        if has_activity:
+            total_sold_qty += product['sold_qty']
+            total_int_qty += product['int_qty']
+            total_sold_val += product['sold_val']
+            total_int_val += product['int_val']
+            total_accounted_val += product['total_val']
     
     total_accounted_qty = total_sold_qty + total_int_qty
     
@@ -82,6 +94,7 @@ def filter_products_by_activity_python(product_data):
 def search_products_python(product_data, search_query):
     """
     Search products by brand name - Python fallback version
+    Returns ALL matching products (including zero-sales) for target calculations
     """
     matching_products = []
     zero_matches = []

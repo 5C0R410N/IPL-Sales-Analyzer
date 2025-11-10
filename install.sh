@@ -16,15 +16,33 @@ if [ -d "/data/data/com.termux/files/usr" ]; then
     echo "🔄 Updating Termux packages..."
     pkg update -y && pkg upgrade -y
 
-    # Install required packages
+    # Install required packages - USING TUR-REPO METHOD
     echo "📦 Installing required packages..."
-    pkg install -y python python-pip git poppler pdftk openjdk-17
+    pkg install -y python git poppler pdftk openjdk-17
+    
+    # Install numpy first (available in main repo)
+    echo "📦 Installing numpy..."
+    pkg install -y python-numpy
+    
+    # Install tur-repo for pandas
+    echo "📦 Installing tur-repo..."
+    pkg install -y tur-repo
+    
+    # Install pandas from tur-repo
+    echo "📦 Installing pandas from tur-repo..."
+    pkg install -y python-pandas
+    
+    # Install remaining Python packages via pip
+    echo "📦 Installing remaining Python dependencies..."
+    pip install --upgrade pip
+    pip install Cython>=0.29.0 pytz>=2021.3 colorama>=0.4.4 tabula-py>=2.8.0 jpype1>=1.4.0 python-dateutil>=2.8.2 tzdata
 
 else
     echo "🐧 Standard Linux environment detected"
     # Install system dependencies for Linux
     sudo apt update
     sudo apt install -y python3 python3-pip python3-venv pdftk poppler-utils default-jdk
+    pip install -r requirements.txt
 fi
 
 # Verify critical commands
@@ -47,51 +65,11 @@ else
     exit 1
 fi
 
-# Install Python dependencies - WITH WHEEL SUPPORT
-echo "🐍 Installing Python dependencies..."
-pip install --upgrade pip
-
-# Get Python version dynamically
-PYTHON_VERSION=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-echo "🐍 Detected Python version: $PYTHON_VERSION"
-
-# Install with optimized approach for Termux
-if [ -d "/data/data/com.termux/files/usr" ]; then
-    echo "🚀 Using Termux-optimized installation..."
-    
-    # Install numpy first
-    echo "📦 Installing numpy..."
-    pip install "numpy>=1.26.0"
-    echo "✅ numpy installed successfully"
-    
-    # Install pandas from local wheel if available
-    echo "📦 Installing pandas..."
-    if [ -f "wheels/pandas-2.3.3-cp312-cp312-linux_aarch64.whl" ]; then
-        echo "🚀 Using local pre-built wheel (instant installation)..."
-        pip install wheels/pandas-2.3.3-cp312-cp312-linux_aarch64.whl
-        echo "✅ pandas installed from local wheel"
-    else
-        echo "🔍 Downloading pre-built wheel..."
-        pip install -v "pandas>=2.3.3" 2>&1 | grep -E "(Using cached|Building wheels|Successfully installed)" || true
-        echo "✅ pandas installed successfully"
-    fi
-    
-    # Install remaining requirements
-    echo "📦 Installing other dependencies..."
-    pip install Cython>=0.29.0 pytz>=2021.3 colorama>=0.4.4 tabula-py>=2.8.0 jpype1>=1.4.0 python-dateutil>=2.8.2 tzdata
-    echo "✅ All dependencies installed"
-    
-else
-    # Standard installation for Linux
-    echo "📦 Installing latest package versions..."
-    pip install -r requirements.txt
-fi
-
-# Test installation
-echo "🧪 Testing installation..."
+# Test Python installation
+echo "🧪 Testing Python installation..."
 python -c "import pandas; print(f'✅ Pandas {pandas.__version__} working')"
-python -c "import tabula; import jpype; print('✅ Tabula and JPype1 working!')"
 python -c "import numpy; print(f'✅ NumPy {numpy.__version__} working')"
+python -c "import tabula; import jpype; print('✅ Tabula and JPype1 working!')"
 
 if [ $? -eq 0 ]; then
     echo "✅ All dependencies installed successfully"

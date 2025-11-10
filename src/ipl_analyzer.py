@@ -109,6 +109,7 @@ def show_progress(description, duration=8, color=Colors.CYAN):
     
     clear_line()
     print(f"{Colors.GREEN}✅ {description} completed{Colors.RESET}")
+
 # Hash and File Functions
 def calculate_single_file_hash(file_path):
     """Calculate MD5 hash of a file"""
@@ -216,9 +217,9 @@ def extract_dates_from_pdf(file_path):
     except Exception as e:
         return "Date range not found", "Not available"
 
-# Enhanced File Listing with Registry Dates
+# Enhanced File Listing with Registry Dates - MODIFIED FOR IMPORT DATE SORTING
 def find_pdf_files_with_registry_dates():
-    """Find PDF files with date information from registry"""
+    """Find PDF files with date information from registry - SORTED BY IMPORT DATE"""
     source_dir = "/storage/emulated/0/SalesSource"
     pdf_files = []
     
@@ -239,11 +240,19 @@ def find_pdf_files_with_registry_dates():
                 
                 date_range = "Date range not in registry"
                 printed_date = "Not available"
+                import_timestamp = mod_time  # Default to file modification time
                 
                 if file_hash and file_hash in hash_registry:
                     registry_data = hash_registry[file_hash]
                     date_range = registry_data.get('date_range', 'Date range not in registry')
                     printed_date = registry_data.get('printed_date', 'Not available')
+                    # Get import timestamp from registry if available
+                    import_date_str = registry_data.get('import_date', '')
+                    if import_date_str:
+                        try:
+                            import_timestamp = datetime.strptime(import_date_str, "%Y-%m-%d %H:%M:%S").timestamp()
+                        except:
+                            import_timestamp = mod_time
                 else:
                     date_range, printed_date = extract_dates_from_pdf(full_path)
                     if file_hash:
@@ -255,12 +264,14 @@ def find_pdf_files_with_registry_dates():
                     'mod_time_str': mod_time_str,
                     'size_mb': file_size,
                     'date_range': date_range,
-                    'printed_date': printed_date
+                    'printed_date': printed_date,
+                    'import_timestamp': import_timestamp  # Add this for sorting
                 })
     except Exception as e:
         return []
     
-    pdf_files.sort(key=lambda x: x['path'], reverse=True)
+    # SORT BY IMPORT TIMESTAMP (most recent first)
+    pdf_files.sort(key=lambda x: x['import_timestamp'], reverse=True)
     return pdf_files
 
 def select_pdf_file_with_dates():
@@ -531,33 +542,62 @@ def run_command_with_progress(cmd, desc):
         print(f"{Colors.RED}❌ Error in {desc}{Colors.RESET}")
         sys.exit(1)
 
-# Product Display Functions
-def display_product_data_list(matching_products, target_share):
-    if not matching_products:
+# Product Display Functions - MODIFIED FOR TARGET CALCULATIONS
+def display_product_data_list(matching_products, zero_matches, target_share):
+    """Display product data with ALL products included in target calculations"""
+    all_products = matching_products + zero_matches
+    
+    if not all_products:
         print(f"{Colors.YELLOW}No products found matching the criteria.{Colors.RESET}")
         return "", 0.0
     
-    totals = calculator.calculate_totals_python(matching_products)
+    # Calculate totals from ALL products for target values
+    totals = calculator.calculate_totals_python(all_products)
     
-    list_content = f"--- Found {len(matching_products)} product(s) matching query ---\n\n"
+    list_content = f"--- Found {len(all_products)} product(s) matching query ---\n"
+    list_content += f"   - {len(matching_products)} with sales activity\n"
+    list_content += f"   - {len(zero_matches)} with zero sales activity\n\n"
     report_content = list_content
 
-    for product in matching_products:
-        entry_str = f"Product Code: {product['code']}\n"
-        entry_str += f"Brand Name: {product['brand_name']}\n"
-        entry_str += f"    - Target Quantity: {product['tgt_qty']}\n"
-        entry_str += f"    - Sold Quantity: {product['sold_qty']}\n"
-        entry_str += f"    - In Transit Quantity: {product['int_qty']}\n"
-        entry_str += f"    - Target Value (Taka): {product['tgt_val']:.2f}\n"
-        entry_str += f"    - Sold Value (Taka): {product['sold_val']:.2f}\n"
-        entry_str += f"    - In Transit Value (Taka): {product['int_val']:.2f}\n"
-        entry_str += f"    - Total Accounted Value (Sold + In Transit, Taka): {product['total_val']:.2f}\n\n"
-        list_content += entry_str
-        report_content += entry_str
+    # Display active products first
+    if matching_products:
+        list_content += f"--- Products WITH Sales Activity ({len(matching_products)}) ---\n\n"
+        report_content += f"--- Products WITH Sales Activity ({len(matching_products)}) ---\n\n"
+        
+        for product in matching_products:
+            entry_str = f"Product Code: {product['code']}\n"
+            entry_str += f"Brand Name: {product['brand_name']}\n"
+            entry_str += f"    - Target Quantity: {product['tgt_qty']}\n"
+            entry_str += f"    - Sold Quantity: {product['sold_qty']}\n"
+            entry_str += f"    - In Transit Quantity: {product['int_qty']}\n"
+            entry_str += f"    - Target Value (Taka): {product['tgt_val']:.2f}\n"
+            entry_str += f"    - Sold Value (Taka): {product['sold_val']:.2f}\n"
+            entry_str += f"    - In Transit Value (Taka): {product['int_val']:.2f}\n"
+            entry_str += f"    - Total Accounted Value (Sold + In Transit, Taka): {product['total_val']:.2f}\n\n"
+            list_content += entry_str
+            report_content += entry_str
+    
+    # Display zero-sales products
+    if zero_matches:
+        list_content += f"--- Products WITH ZERO Sales Activity ({len(zero_matches)}) ---\n\n"
+        report_content += f"--- Products WITH ZERO Sales Activity ({len(zero_matches)}) ---\n\n"
+        
+        for product in zero_matches:
+            entry_str = f"Product Code: {product['code']}\n"
+            entry_str += f"Brand Name: {product['brand_name']}\n"
+            entry_str += f"    - Target Quantity: {product['tgt_qty']}\n"
+            entry_str += f"    - Sold Quantity: {product['sold_qty']}\n"
+            entry_str += f"    - In Transit Quantity: {product['int_qty']}\n"
+            entry_str += f"    - Target Value (Taka): {product['tgt_val']:.2f}\n"
+            entry_str += f"    - Sold Value (Taka): {product['sold_val']:.2f}\n"
+            entry_str += f"    - In Transit Value (Taka): {product['int_val']:.2f}\n"
+            entry_str += f"    - Total Accounted Value (Taka): {product['total_val']:.2f}\n\n"
+            list_content += entry_str
+            report_content += entry_str
     
     print(list_content)
     
-    totals_content = f"--- Total for matching products ---\n"
+    totals_content = f"--- Total for ALL matching products ({len(all_products)} products) ---\n"
     totals_content += f"    - Total Target Quantity: {totals['total_tgt_qty']}\n"
     totals_content += f"    - Total Sold Quantity: {totals['total_sold_qty']}\n"
     totals_content += f"    - Total In Transit Quantity: {totals['total_int_qty']}\n"
@@ -733,14 +773,12 @@ def main():
             print(f"{Colors.RED}❌ Please enter a product name{Colors.RESET}")
             continue
         
-        # Search products
+        # Search products - get ALL matching products (active + zero-sales)
         matching_products, zero_matches = calculator.search_products_python(structured_data + zero_value_data, product_query)
         
-        if matching_products:
-            report_section, avg_val = display_product_data_list(matching_products, target_share)
-        elif zero_matches:
-            print(f"{Colors.YELLOW}⚠️  '{product_query}' has no sales activity{Colors.RESET}")
-            report_section, avg_val = display_zero_value_products_list(zero_matches)
+        if matching_products or zero_matches:
+            # Use MODIFIED function that includes ALL products in target calculations
+            report_section, avg_val = display_product_data_list(matching_products, zero_matches, target_share)
         else:
             print(f"{Colors.RED}❌ No products found matching '{product_query}'{Colors.RESET}")
             report_section = f"No products found matching '{product_query}'.\n"
@@ -814,7 +852,7 @@ def main():
     print_header("ANALYSIS COMPLETED")
     print_centered(f"{Colors.WHITE}Thanks for using IPL Sales Analyzer!{Colors.RESET}", Colors.WHITE)
     print_centered(f"{Colors.RED}Powered By Team : Operon - Xenovision | XO:24  {Colors.RESET}", Colors.RED)
-    print_centered(f"{Colors.RED} © Ahia Masud Emon | Halishahar | Chattagram  {Colors.RESET}", Colors.RED)
+    print_centered(f"{Colors.RED} © Ahia Masud Emon | Halishahar | Chattogram  {Colors.RESET}", Colors.RED)
     print_centered(f"{Colors.GREEN}🕒 {format_current_time()}{Colors.RESET}", Colors.GREEN)
 
 if __name__ == "__main__":
